@@ -4,10 +4,19 @@ import RequestFilters from "@/components/admin/request-filters";
 import { requireRole } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
+type PortalRequestListItem = {
+  createdAt: Date;
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+};
+
 export default async function AdminRequestsPage() {
   const user = await requireRole("ADMIN");
 
-  const requests = await prisma.portalRequest.findMany({
+  const requests: PortalRequestListItem[] = await prisma.portalRequest.findMany({
     orderBy: {
       createdAt: "desc",
     },
@@ -22,7 +31,7 @@ export default async function AdminRequestsPage() {
     },
   });
 
-  const requestItems = requests.map((request) => ({
+  const requestItems = requests.map((request: PortalRequestListItem) => ({
     ...request,
     createdAt: request.createdAt.toISOString(),
   }));

@@ -5,10 +5,14 @@ import { requireCustomer } from "@/lib/session";
 import { mapDbProductToStorefront } from "@/lib/storefront-products";
 import ProductGrid from "@/components/shop/product-grid";
 
+type WishlistItemRef = {
+  productId: string;
+};
+
 export default async function AccountWishlistPage() {
   const user = await requireCustomer();
 
-  const wishlistItems = await prisma.wishlistItem.findMany({
+  const wishlistItems: WishlistItemRef[] = await prisma.wishlistItem.findMany({
     where: {
       userId: user.id,
     },
@@ -17,7 +21,9 @@ export default async function AccountWishlistPage() {
     },
   });
 
-  const productIds = wishlistItems.map((item) => item.productId);
+  const productIds = wishlistItems.map(
+    (item: WishlistItemRef) => item.productId
+  );
 
   const products = productIds.length
     ? await prisma.product.findMany({

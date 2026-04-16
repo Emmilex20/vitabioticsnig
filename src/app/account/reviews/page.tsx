@@ -5,10 +5,24 @@ import StarRating from "@/components/shop/star-rating";
 import { prisma } from "@/lib/prisma";
 import { requireCustomer } from "@/lib/session";
 
+type ReviewItem = {
+  id: string;
+  productId: string;
+  rating: number;
+  comment: string;
+  createdAt: Date;
+};
+
+type ReviewProduct = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
 export default async function AccountReviewsPage() {
   const user = await requireCustomer();
 
-  const reviews = await prisma.productReview.findMany({
+  const reviews: ReviewItem[] = await prisma.productReview.findMany({
     where: {
       userId: user.id,
     },
@@ -17,9 +31,9 @@ export default async function AccountReviewsPage() {
     },
   });
 
-  const productIds = reviews.map((review) => review.productId);
+  const productIds = reviews.map((review: ReviewItem) => review.productId);
 
-  const products = productIds.length
+  const products: ReviewProduct[] = productIds.length
     ? await prisma.product.findMany({
         where: {
           id: {
@@ -34,7 +48,9 @@ export default async function AccountReviewsPage() {
       })
     : [];
 
-  const productMap = new Map(products.map((product) => [product.id, product]));
+  const productMap = new Map(
+    products.map((product: ReviewProduct) => [product.id, product])
+  );
 
   return (
     <AccountShell>
@@ -55,7 +71,7 @@ export default async function AccountReviewsPage() {
             </p>
           </div>
         ) : (
-          reviews.map((review) => {
+          reviews.map((review: ReviewItem) => {
             const product = productMap.get(review.productId);
 
             return (
