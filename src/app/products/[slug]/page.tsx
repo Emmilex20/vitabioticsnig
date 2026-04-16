@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { Product as DbProduct } from "@prisma/client";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import SiteShell from "@/components/layout/site-shell";
@@ -28,6 +27,8 @@ const getProductBySlug = cache(async (slug: string) =>
     where: { slug },
   })
 );
+
+type DbProduct = NonNullable<Awaited<ReturnType<typeof getProductBySlug>>>;
 
 export async function generateMetadata({
   params,
