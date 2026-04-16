@@ -14,11 +14,20 @@ type RouteContext = {
   }>;
 };
 
+type ProductReviewListItem = {
+  rating: number;
+  productId: string;
+  user: {
+    firstName: string;
+    lastName: string;
+  };
+};
+
 export async function GET(_request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
 
-    const reviews = await prisma.productReview.findMany({
+    const reviews: ProductReviewListItem[] = await prisma.productReview.findMany({
       where: {
         productId: id,
       },
@@ -38,7 +47,11 @@ export async function GET(_request: Request, { params }: RouteContext) {
     const count = reviews.length;
     const averageRating =
       count > 0
-        ? reviews.reduce((sum, review) => sum + review.rating, 0) / count
+        ? reviews.reduce(
+            (sum: number, review: ProductReviewListItem) =>
+              sum + review.rating,
+            0
+          ) / count
         : 0;
 
     return NextResponse.json(
