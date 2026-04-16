@@ -103,8 +103,17 @@ function formatPrice(price: number) {
   }).format(price);
 }
 
+type FeaturedProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  category: "WOMEN" | "MEN" | "KIDS" | "PREGNANCY";
+  price: number;
+  imageUrl: string | null;
+};
+
 export default async function AboutPage() {
-  const featuredProducts = await prisma.product.findMany({
+  const featuredProducts: FeaturedProduct[] = await prisma.product.findMany({
     where: {
       inStock: true,
     },
@@ -402,7 +411,7 @@ export default async function AboutPage() {
 
           {featuredProducts.length > 0 ? (
             <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-              {featuredProducts.map((product) => (
+              {featuredProducts.map((product: FeaturedProduct) => (
                 <article
                   key={product.id}
                   className="overflow-hidden rounded-4xl border border-(--border) bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
