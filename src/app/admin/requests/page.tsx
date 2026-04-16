@@ -5,6 +5,11 @@ import { requireRole } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
 type PortalRequestListItem = {
+  id: string;
+  title: string;
+  type: string;
+  organization: string;
+  status: string;
   createdAt: Date;
   user: {
     firstName: string;
