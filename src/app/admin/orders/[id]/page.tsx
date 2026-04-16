@@ -20,6 +20,14 @@ type PageProps = {
   }>;
 };
 
+type AdminOrderItem = {
+  id: string;
+  productName: string;
+  sku: string;
+  quantity: number;
+  totalPrice: number;
+};
+
 export default async function AdminOrderDetailPage({ params }: PageProps) {
   const user = await requireRole("ADMIN");
   const { id } = await params;
@@ -153,7 +161,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             </h3>
 
             <div className="mt-5 space-y-4">
-              {order.items.map((item) => (
+              {order.items.map((item: AdminOrderItem) => (
                 <div
                   key={item.id}
                   className="rounded-[1.5rem] border border-[var(--border)] bg-slate-50 p-5"
