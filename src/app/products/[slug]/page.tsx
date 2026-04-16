@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Product as DbProduct } from "@prisma/client";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import SiteShell from "@/components/layout/site-shell";
@@ -68,7 +69,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const relatedDbProducts = await prisma.product.findMany({
+  const relatedDbProducts: DbProduct[] = await prisma.product.findMany({
     where: {
       category: dbProduct.category,
       NOT: {
@@ -83,7 +84,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const ratingsMap = await getProductRatingsMap([
     dbProduct.id,
-    ...relatedDbProducts.map((p) => p.id),
+    ...relatedDbProducts.map((p: DbProduct) => p.id),
   ]);
 
   const productRating = ratingsMap[dbProduct.id];
@@ -147,7 +148,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ],
   };
 
-  const relatedProducts = relatedDbProducts.map((related) => {
+  const relatedProducts = relatedDbProducts.map((related: DbProduct) => {
     const rating = ratingsMap[related.id];
 
     return {
