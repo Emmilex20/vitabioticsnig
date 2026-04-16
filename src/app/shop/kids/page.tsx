@@ -7,6 +7,8 @@ import { mapDbProductToStorefront } from "@/lib/storefront-products";
 import { getProductRatingsMap } from "@/lib/product-ratings";
 import { buildMetadata } from "@/lib/seo";
 
+type ShopDbProduct = Parameters<typeof mapDbProductToStorefront>[0];
+
 export const metadata: Metadata = buildMetadata({
   title: "Kids Vitamins & Children's Wellness Support",
   description:
@@ -22,14 +24,16 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function KidsPage() {
-  const dbProducts = await prisma.product.findMany({
+  const dbProducts: ShopDbProduct[] = await prisma.product.findMany({
     where: { category: "KIDS" },
     orderBy: { createdAt: "desc" },
   });
 
-  const ratingsMap = await getProductRatingsMap(dbProducts.map((p) => p.id));
+  const ratingsMap = await getProductRatingsMap(
+    dbProducts.map((p: ShopDbProduct) => p.id)
+  );
 
-  const kidsProducts = dbProducts.map((product) => {
+  const kidsProducts = dbProducts.map((product: ShopDbProduct) => {
     const mapped = mapDbProductToStorefront(product);
     const rating = ratingsMap[product.id];
 
