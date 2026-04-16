@@ -12,6 +12,11 @@ type CheckoutItem = {
   quantity: number;
 };
 
+type ProductSkuEntry = {
+  id: string;
+  sku: string;
+};
+
 function generateReference(orderId: string) {
   return `VTB-${orderId}-${Date.now()}`;
 }
@@ -71,7 +76,7 @@ export async function POST(request: Request) {
     const total = calculateOrderTotal(subtotal);
 
     const productIds = items.map((item) => item.id);
-    const products = await prisma.product.findMany({
+    const products: ProductSkuEntry[] = await prisma.product.findMany({
       where: {
         id: {
           in: productIds,
@@ -83,7 +88,9 @@ export async function POST(request: Request) {
       },
     });
 
-    const productSkuMap = new Map(products.map((product) => [product.id, product.sku]));
+    const productSkuMap = new Map(
+      products.map((product: ProductSkuEntry) => [product.id, product.sku])
+    );
 
     if (products.length !== productIds.length) {
       return NextResponse.json(
