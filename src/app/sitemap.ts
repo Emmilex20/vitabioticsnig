@@ -4,6 +4,12 @@ import { absoluteUrl, toAbsoluteUrl } from "@/lib/seo";
 
 export const revalidate = 3600;
 
+type SitemapProduct = {
+  slug: string;
+  updatedAt: Date;
+  imageUrl: string | null;
+};
+
 const staticRoutes: MetadataRoute.Sitemap = [
   {
     url: absoluteUrl("/"),
@@ -38,7 +44,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const products = await prisma.product.findMany({
+  const products: SitemapProduct[] = await prisma.product.findMany({
     select: {
       slug: true,
       updatedAt: true,
@@ -49,13 +55,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   });
 
-  const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
-    url: absoluteUrl(`/products/${product.slug}`),
-    lastModified: product.updatedAt,
-    changeFrequency: "weekly",
-    priority: 0.8,
-    images: product.imageUrl ? [toAbsoluteUrl(product.imageUrl)] : undefined,
-  }));
+  const productRoutes: MetadataRoute.Sitemap = products.map(
+    (product: SitemapProduct) => ({
+      url: absoluteUrl(`/products/${product.slug}`),
+      lastModified: product.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.8,
+      images: product.imageUrl ? [toAbsoluteUrl(product.imageUrl)] : undefined,
+    })
+  );
 
   return [...staticRoutes, ...productRoutes];
 }
